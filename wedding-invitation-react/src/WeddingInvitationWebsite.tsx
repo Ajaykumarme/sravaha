@@ -287,7 +287,7 @@ export default function WeddingInvitationWebsite() {
                 onClick={enterWedding}
                 className="mt-10 inline-flex items-center gap-3 rounded-full bg-gradient-gold px-7 py-3.5 font-display text-sm tracking-[0.16em] text-[#2d1b08] shadow-glow transition hover:scale-105"
               >
-                <Sparkles size={16} /> Tap to Enter Our Wedding Story
+                <Sparkles size={16} /> Come Here
               </button>
             </div>
           </motion.div>
