@@ -56,6 +56,7 @@ export default function WeddingInvitationWebsite() {
   const [audioStarted, setAudioStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(weddingDate));
   const [introInView, setIntroInView] = useState(false);
+  const [introSoundOn, setIntroSoundOn] = useState(false);
   const videoSectionRef = useRef<HTMLElement | null>(null);
 
   const [wishes] = useState([
@@ -103,10 +104,15 @@ export default function WeddingInvitationWebsite() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIntroInView(entry.isIntersecting && entry.intersectionRatio >= 0.55);
+        const visible = entry.isIntersecting && entry.intersectionRatio >= 0.45;
+        setIntroInView(visible);
+
+        if (!visible) {
+          setIntroSoundOn(false);
+        }
       },
       {
-        threshold: [0.2, 0.4, 0.55, 0.7],
+        threshold: [0.2, 0.35, 0.45, 0.6, 0.75],
       },
     );
 
@@ -123,6 +129,10 @@ export default function WeddingInvitationWebsite() {
   const enterWedding = () => {
     setEntered(true);
     setAudioStarted(true);
+  };
+
+  const enableIntroSound = () => {
+    setIntroSoundOn(true);
   };
 
   return (
@@ -281,7 +291,8 @@ export default function WeddingInvitationWebsite() {
               <Ornament label="Two Hearts · One Forever" />
               <p className="font-serif-body italic text-base sm:text-xl text-[#f8efe3cc] max-w-2xl mx-auto leading-relaxed">
                 With joyful hearts and family blessings, we invite you to celebrate our marriage
-                on <span className="text-gold font-semibold">Friday, 1st May 2026</span> at <span className="text-gold font-semibold">10:12 AM</span>.
+                on <span className="text-gold font-semibold">Friday, 1st May 2026</span> at{" "}
+                <span className="text-gold font-semibold">10:12 AM</span>.
               </p>
               <button
                 onClick={enterWedding}
@@ -296,12 +307,11 @@ export default function WeddingInvitationWebsite() {
 
       {audioStarted && (
         <iframe
-          key={`bg-audio-${effectiveBgMuted ? "muted" : "unmuted"}`}
           title="Wedding Music"
-          className="hidden"
-          width="0"
-          height="0"
-          allow="autoplay"
+          className="fixed -left-[9999px] top-0 h-px w-px opacity-0 pointer-events-none"
+          width="1"
+          height="1"
+          allow="autoplay; encrypted-media"
           src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&loop=1&playlist=${youtubeId}&controls=0&mute=${effectiveBgMuted ? 1 : 0}&modestbranding=1&playsinline=1&rel=0`}
         />
       )}
@@ -354,23 +364,15 @@ export default function WeddingInvitationWebsite() {
       </header>
 
       <main className="overflow-hidden pt-[72px]">
-        <section
-          id="hero"
-          className="relative min-h-screen w-full overflow-hidden flex items-center justify-center"
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center scale-105"
-            style={{ backgroundImage: `url(${coupleImage})` }}
-          />
+        <section id="hero" className="relative min-h-screen w-full overflow-hidden flex items-center justify-center">
+          <div className="absolute inset-0 bg-cover bg-center scale-105" style={{ backgroundImage: `url(${coupleImage})` }} />
           <div className="absolute inset-0 hero-bg" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#12081799] via-[#12081766] to-[#120817]" />
           <FloatingSparkles count={50} />
 
           <div className="relative z-10 text-center px-6 py-20 max-w-5xl mx-auto animate-fade-in">
             <p className="font-script text-2xl sm:text-4xl text-gold mb-2">We Invite You To</p>
-            <h2 className="text-xs sm:text-sm tracking-[0.4em] text-[#f8efe3aa] uppercase mb-6">
-              The Wedding Celebration Of
-            </h2>
+            <h2 className="text-xs sm:text-sm tracking-[0.4em] text-[#f8efe3aa] uppercase mb-6">The Wedding Celebration Of</h2>
 
             <h1 className="font-display text-5xl sm:text-7xl md:text-8xl text-ivory leading-tight">
               <span className="block shimmer-text">Sravan Kumar</span>
@@ -382,7 +384,8 @@ export default function WeddingInvitationWebsite() {
 
             <p className="font-serif-body italic text-base sm:text-xl text-[#f8efe3db] max-w-2xl mx-auto leading-relaxed">
               With joyful hearts and family blessings, we invite you to celebrate our marriage
-              on <span className="text-gold font-semibold">Friday, 1st May 2026</span> at <span className="text-gold font-semibold">10:12 AM</span>.
+              on <span className="text-gold font-semibold">Friday, 1st May 2026</span> at{" "}
+              <span className="text-gold font-semibold">10:12 AM</span>.
             </p>
 
             <div className="mt-10">
@@ -390,22 +393,13 @@ export default function WeddingInvitationWebsite() {
             </div>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              <button
-                onClick={() => scrollTo("invitation")}
-                className="px-6 py-3 rounded-full bg-gradient-gold text-[#2d1b08] font-display text-sm tracking-wider shadow-glow hover:scale-105 transition flex items-center gap-2"
-              >
+              <button onClick={() => scrollTo("invitation")} className="px-6 py-3 rounded-full bg-gradient-gold text-[#2d1b08] font-display text-sm tracking-wider shadow-glow hover:scale-105 transition flex items-center gap-2">
                 <ScrollText size={16} /> View Invitation
               </button>
-              <button
-                onClick={() => scrollTo("video")}
-                className="px-6 py-3 rounded-full gold-border glass-card text-ivory font-display text-sm tracking-wider hover:bg-white/10 transition flex items-center gap-2"
-              >
+              <button onClick={() => scrollTo("video")} className="px-6 py-3 rounded-full gold-border glass-card text-ivory font-display text-sm tracking-wider hover:bg-white/10 transition flex items-center gap-2">
                 <PlayCircle size={16} /> Watch Intro Video
               </button>
-              <button
-                onClick={() => scrollTo("venue")}
-                className="px-6 py-3 rounded-full gold-border glass-card text-ivory font-display text-sm tracking-wider hover:bg-white/10 transition flex items-center gap-2"
-              >
+              <button onClick={() => scrollTo("venue")} className="px-6 py-3 rounded-full gold-border glass-card text-ivory font-display text-sm tracking-wider hover:bg-white/10 transition flex items-center gap-2">
                 <MapPin size={16} /> Venue Location
               </button>
             </div>
@@ -470,9 +464,7 @@ export default function WeddingInvitationWebsite() {
                 </div>
 
                 <Ornament />
-                <p className="font-serif-body italic text-sm text-[#f8efe3b3]">
-                  Your presence and blessings will make our day truly memorable.
-                </p>
+                <p className="font-serif-body italic text-sm text-[#f8efe3b3]">Your presence and blessings will make our day truly memorable.</p>
               </div>
             </div>
           </div>
@@ -490,20 +482,17 @@ export default function WeddingInvitationWebsite() {
                 {
                   title: "Beautiful Beginning",
                   subtitle: "Two paths, one promise",
-                  body:
-                    "Their journey began with warmth, trust, and a connection that blossomed into something timeless and true.",
+                  body: "Their journey began with warmth, trust, and a connection that blossomed into something timeless and true.",
                 },
                 {
                   title: "Family Blessings",
                   subtitle: "Tradition meets togetherness",
-                  body:
-                    "As families came together with joy and grace, their bond became a celebration of love rooted in tradition.",
+                  body: "As families came together with joy and grace, their bond became a celebration of love rooted in tradition.",
                 },
                 {
                   title: "Forever Starts Here",
                   subtitle: "A new chapter begins",
-                  body:
-                    "On this sacred day, surrounded by love, Sravan Kumar and Neha step into a life of shared dreams and lifelong companionship.",
+                  body: "On this sacred day, surrounded by love, Sravan Kumar and Neha step into a life of shared dreams and lifelong companionship.",
                 },
               ].map((item, i) => (
                 <motion.div
@@ -527,16 +516,12 @@ export default function WeddingInvitationWebsite() {
           </div>
         </section>
 
-        <section
-          id="video"
-          ref={videoSectionRef}
-          className="relative py-24 px-6 section-bg"
-        >
+        <section id="video" ref={videoSectionRef} className="relative py-24 px-6 section-bg">
           <div className="max-w-6xl mx-auto">
             <SectionHeading
               script="Cinematic Entry"
               title="Intro Video"
-              description="As you reach this section, the intro video begins automatically and the background music is muted for a smooth cinematic experience."
+              description="The intro video starts automatically on mobile in muted mode. Tap the sound button on the video to hear it."
             />
 
             <div className="mt-12 rounded-[28px] gold-border glass-card p-4 sm:p-6 shadow-elegant">
@@ -544,18 +529,27 @@ export default function WeddingInvitationWebsite() {
                 {entered ? (
                   <>
                     <iframe
-                      key={introInView ? "intro-playing" : "intro-idle"}
+                      key={`${introInView ? "play" : "idle"}-${introSoundOn ? "sound" : "muted"}`}
                       title="Sravan Kumar and Neha Wedding Intro Video"
                       src={
                         introInView
-                          ? `https://www.youtube-nocookie.com/embed/${introVideoId}?autoplay=1&mute=0&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3`
+                          ? `https://www.youtube-nocookie.com/embed/${introVideoId}?autoplay=1&mute=${introSoundOn ? 0 : 1}&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3`
                           : `https://www.youtube-nocookie.com/embed/${introVideoId}?autoplay=0&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3`
                       }
                       className="h-full w-full pointer-events-none"
                       allow="autoplay; encrypted-media; picture-in-picture"
                       allowFullScreen={false}
                     />
-                    <div className="pointer-events-none absolute inset-0 z-10" />
+
+                    {!introSoundOn && introInView && (
+                      <button
+                        type="button"
+                        onClick={enableIntroSound}
+                        className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2 rounded-full bg-gradient-gold px-5 py-2.5 font-display text-xs tracking-[0.16em] text-[#2d1b08] shadow-glow transition hover:scale-105"
+                      >
+                        Tap for Intro Sound
+                      </button>
+                    )}
                   </>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-center text-[#f8efe3b8] px-6">
@@ -753,12 +747,7 @@ export default function WeddingInvitationWebsite() {
 
             <div className="grid lg:grid-cols-2 gap-8 items-stretch mt-12">
               <div className="rounded-2xl gold-border overflow-hidden shadow-elegant min-h-[360px] animate-scale-in">
-                <iframe
-                  title="Venue Map"
-                  src={mapEmbed}
-                  className="w-full h-full min-h-[360px] border-0"
-                  loading="lazy"
-                />
+                <iframe title="Venue Map" src={mapEmbed} className="w-full h-full min-h-[360px] border-0" loading="lazy" />
               </div>
 
               <div className="rounded-2xl gold-border glass-card p-8 shadow-elegant animate-fade-in">
@@ -784,12 +773,7 @@ export default function WeddingInvitationWebsite() {
                   <li className="flex items-start gap-3"><MapPin size={16} className="text-gold mt-0.5" /> Lunch served from 12:30 PM onwards</li>
                 </ul>
 
-                <a
-                  href={venueLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-gold text-[#2d1b08] font-display text-sm tracking-wider shadow-glow hover:scale-105 transition"
-                >
+                <a href={venueLink} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-gold text-[#2d1b08] font-display text-sm tracking-wider shadow-glow hover:scale-105 transition">
                   <Navigation size={16} /> Navigate to Venue
                 </a>
               </div>
@@ -829,9 +813,7 @@ export default function WeddingInvitationWebsite() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.5, delay: i * 0.05 }}
-                    className={`rounded-2xl gold-border glass-card p-6 shadow-elegant ${
-                      i === 2 ? "md:col-span-2" : ""
-                    }`}
+                    className={`rounded-2xl gold-border glass-card p-6 shadow-elegant ${i === 2 ? "md:col-span-2" : ""}`}
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-gold text-[#2d1b08] shadow-glow">
                       <Heart size={16} />
